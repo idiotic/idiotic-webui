@@ -17,45 +17,51 @@ function do_scene(scene, action) {
 }
 
 var app = angular.module("idiotic", []);
-app.service("api", ["$http", "Item", function($http, Item) {
-    var api = this;
-    api.api_url = '/api/';
+app.factory("Api", ["$http", "Item", function($http, Item) {
+    function Api(api_root) {
+        var api = new Object();
+        api.api_url = api_root + 'api/';
 
-    api.items = [];
+        api.items = [];
 
-    api.get = function(endpoint) {
-        return $http.get(encodeURI(api.api_url + endpoint)).then(function(resp) {
-            if(resp.data.status == "success") {
-                console.log('GET /api/' + endpoint + ' successful');
-                return resp.data.result;
-            } else {
-                console.log('GET /api/' + endpoint + ' FAILED ' + resp.data.result);
-                throw resp.data.result;
-            }
-        });
-    };
-    api.post = function(endpoint, data) {
-        return $http.post(encodeURI(api.api_url + endpoint), data).then(function(resp) {
-            if(resp.data.status == "success") {
-                console.log('POST /api/' + endpoint + ' successful');
-                return resp.data.result;
-            } else {
-                console.log('POST /api/' + endpoint + ' FAILED ' + resp.data.result);
-                throw resp.data.result;
-            }
-        });
-    };
-
-    var refresh = function() {
-        api.get('items').then(function(items_json) {
-            api.items = [];
-            angular.forEach(items_json, function(item_json) {
-                api.items.push(Item(api, item_json));
+        api.get = function(endpoint) {
+            return $http.get(encodeURI(api.api_url + endpoint)).then(function(resp) {
+                if(resp.data.status == "success") {
+                    console.log('GET', api.api_url + endpoint + ' successful');
+                    return resp.data.result;
+                } else {
+                    console.log('GET', api.api_url + endpoint + ' FAILED ' + resp.data.result);
+                    throw resp.data.result;
+                }
             });
-        });
-    };
+        };
+        api.post = function(endpoint, data) {
+            return $http.post(encodeURI(api.api_url + endpoint), data).then(function(resp) {
+                if(resp.data.status == "success") {
+                    console.log('GET', api.api_url + endpoint + ' successful');
+                    return resp.data.result;
+                } else {
+                    console.log('GET', api.api_url + endpoint + ' FAILED ' + resp.data.result);
+                    throw resp.data.result;
+                }
+            });
+        };
 
-    refresh();
+        api.refresh = function() {
+            console.log('Refreshing API from', api.api_url);
+            api.get('items').then(function(items_json) {
+                api.items = [];
+                angular.forEach(items_json, function(item_json) {
+                    api.items.push(Item(api, item_json));
+                });
+            });
+        };
+
+        api.refresh();
+        return api;
+    };
+    console.log(Api);
+    return Api;
 }]);
 
 app.factory("Item", ["$http", function($http) {
@@ -104,11 +110,19 @@ app.factory("Item", ["$http", function($http) {
     return Item;
 }]);
 
-app.controller("idioticController", ["$scope", "api", function($scope, api) {
+app.controller("idioticController", ["$scope", "$http", "Api", function($scope, $http, Api) {
     var idiotic = this;
-    idiotic.api = api;
 
-    idiotic.items = function() { return api.items; };
+    // Give empty array until API is loaded.
+    idiotic.items = function() { return []; }
+
+    $http.get("/webui_conf.json").then(function(resp) {
+        console.log('WebUI configuration loaded');
+        idiotic.conf = resp.data;
+
+        idiotic.api = Api(idiotic.conf.api_base);
+        idiotic.items = function() { return idiotic.api.items; };
+    });
 }]);
 
 $(function() {
