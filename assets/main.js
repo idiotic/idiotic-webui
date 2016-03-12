@@ -34,6 +34,17 @@ app.service("api", ["$http", "Item", function($http, Item) {
             }
         });
     };
+    api.post = function(endpoint, data) {
+        return $http.post(encodeURI(api.api_url + endpoint), data).then(function(resp) {
+            if(resp.data.status == "success") {
+                console.log('POST /api/' + endpoint + ' successful');
+                return resp.data.result;
+            } else {
+                console.log('POST /api/' + endpoint + ' FAILED ' + resp.data.result);
+                throw resp.data.result;
+            }
+        });
+    };
 
     var refresh = function() {
         api.get('items').then(function(items_json) {
@@ -53,6 +64,14 @@ app.factory("Item", ["$http", function($http) {
         angular.extend(item, itemData);
         item.api = api;
 
+        item.send_state = function() {
+            return item.send_command("set?val=" + item.state);
+        }
+
+        item.send_command = function(command) {
+            return api.get("item/" + item.id + "/command/" + command);
+        }
+
         item.enable_graph = function() {
             return item.tags.indexOf("webui.enable_graph") >= 0;
         }
@@ -69,9 +88,9 @@ app.factory("Item", ["$http", function($http) {
         }
         item.send_disable = function() {
           if(item.enabled) {
-            api.get("item/" + item.id + "/enable");
+            return api.get("item/" + item.id + "/enable");
           } else {
-            api.get("item/" + item.id + "/disable");
+            return api.get("item/" + item.id + "/disable");
           }
         }
 
