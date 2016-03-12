@@ -7,7 +7,7 @@
     <div class="col s12 m9 l10">
       <!-- TODO: divide into sections -->
 
-      <div ng-repeat="item in idiotic.items()">
+      <div ng-repeat="item in idiotic.items() track by item.id">
         {# Jinja2 raw so Angular templates can be processed. #}
         {% raw %}
         <form id="controls_form_{{item.id}}" class="controls-form">

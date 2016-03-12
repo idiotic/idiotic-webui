@@ -25,7 +25,7 @@ function do_disable(item, disable) {
 }
 
 var app = angular.module("idiotic", []);
-app.service("api", ["$http", function($http) {
+app.service("api", ["$http", "Item", function($http, Item) {
     var api = this;
     api.api_url = '/api/';
 
@@ -44,12 +44,26 @@ app.service("api", ["$http", function($http) {
     };
 
     var refresh = function() {
-        api.get('items').then(function(items) {
-            api.items = items;
+        api.get('items').then(function(items_json) {
+            api.items = [];
+            angular.forEach(items_json, function(item_json) {
+                api.items.push(Item(item_json));
+            });
         });
     };
 
     refresh();
+}]);
+
+app.factory("Item", ["$http", function($http) {
+    function Item(itemData) {
+        var item = new Object();
+        angular.extend(item, itemData);
+
+        return item;
+    };
+
+    return Item;
 }]);
 
 app.controller("idioticController", ["$scope", "api", function($scope, api) {
