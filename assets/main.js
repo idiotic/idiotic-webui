@@ -54,6 +54,9 @@ app.service("api", ["$http", function($http) {
 
 app.controller("idioticController", ["$scope", "api", function($scope, api) {
     var idiotic = this;
+    idiotic.api = api;
+
+    idiotic.items = function() { return api.items; };
 }]);
 
 $(function() {
