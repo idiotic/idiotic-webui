@@ -3,6 +3,7 @@
 """
 
 import jinja2
+import json
 import logging
 import datetime
 import requests
@@ -51,6 +52,7 @@ def configure(config, api, assets):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(asset_path))
 
     api.add_url_rule('/main.js', '_main_js', _main_js)
+    api.add_url_rule('/webui_conf.json', '__webui_conf', _webui_conf(config))
     api.add_url_rule('/sparkline/<item>.svg', '_sparkline', _sparkline)
     api.add_url_rule('/graph/<item>.svg', '_graph', _graph)
 
@@ -151,6 +153,11 @@ def _main_page(sections, *_, **__):
 
 def _main_js(*_, **__):
     return Response(env.get_template('main.js').render(), mimetype='text/javascript')
+
+def _webui_conf(config):
+    def __webui_conf(*_, **__):
+        return Response(json.dumps(config), mimetype='application/json')
+    return __webui_conf
 
 def __empty_svg():
     return """<?xml version="1.0" encoding="UTF-8" standalone="no"?> <svg
