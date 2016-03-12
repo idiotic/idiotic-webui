@@ -24,6 +24,38 @@ function do_disable(item, disable) {
   }
 }
 
+var app = angular.module("idiotic", []);
+app.service("api", ["$http", function($http) {
+    var api = this;
+    api.api_url = '/api/';
+
+    api.items = [];
+
+    api.get = function(endpoint) {
+        return $http.get(encodeURI(api.api_url + endpoint)).then(function(resp) {
+            if(resp.data.status == "success") {
+                console.log('GET /api/' + endpoint + ' successful');
+                return resp.data.result;
+            } else {
+                console.log('GET /api/' + endpoint + ' FAILED ' + resp.data.result);
+                throw resp.data.result;
+            }
+        });
+    };
+
+    var refresh = function() {
+        api.get('items').then(function(items) {
+            api.items = items;
+        });
+    };
+
+    refresh();
+}]);
+
+app.controller("idioticController", ["$scope", "api", function($scope, api) {
+    var idiotic = this;
+}]);
+
 $(function() {
     $("#toc").pushpin({top: $("#page-top").offset().top });
     $(".scrollspy").scrollSpy();
