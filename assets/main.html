@@ -23,10 +23,10 @@
             </div>
             <div class="col s2 m1">
               <a class="graph_link" href="graph/{{item.id}}.svg"
-                 ng-if="item.tags.indexOf('enable_graph') >= 0">
+                 ng-if="item.enable_graph()">
                 <i class="material-icons hoverable black-text">insert_chart</i>
               </a>
-              <div ng-if="item.tags.indexOf('enable_graph') != 0">
+              <div ng-if="!item.enable_graph()">
                 &nbsp;
               </div>
             </div>
@@ -37,7 +37,7 @@
               &nbsp;
             </div>
             <div class="col s6 m1">
-              <div ng-if="item.tags.indexOf('webui.show_disable') >= 0">
+              <div ng-if="item.show_disable()">
                 <input type="checkbox"
                        id="disable_{{ item.name }}"
                        class="disable filled-in"
@@ -47,7 +47,7 @@
                        />
                 <label for="disable_{{ item.name }}">Disable</label>
               </div>
-              <div ng-if="item.tags.indexOf('webui.show_disable') != 0">
+              <div ng-if="!item.show_disable()">
                 &nbsp;
               </div>
             </div>

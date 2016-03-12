@@ -60,6 +60,13 @@ app.factory("Item", ["$http", function($http) {
         var item = new Object();
         angular.extend(item, itemData);
 
+        item.enable_graph = function() {
+            return item.tags.indexOf("webui.enable_graph") >= 0;
+        }
+        item.show_disable = function() {
+            return item.tags.indexOf("webui.show_disable") >= 0;
+        }
+
         return item;
     };
 
