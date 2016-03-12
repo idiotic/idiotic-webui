@@ -16,14 +16,6 @@ function do_scene(scene, action) {
     do_api("/api/scene/" + scene + "/command/" + (action?action:""));
 }
 
-function do_disable(item, disable) {
-  if(disable) {
-    do_api("/api/item/" + item + "/disable");
-  } else {
-    do_api("/api/item/" + item + "/enable");
-  }
-}
-
 var app = angular.module("idiotic", []);
 app.service("api", ["$http", "Item", function($http, Item) {
     var api = this;
@@ -47,7 +39,7 @@ app.service("api", ["$http", "Item", function($http, Item) {
         api.get('items').then(function(items_json) {
             api.items = [];
             angular.forEach(items_json, function(item_json) {
-                api.items.push(Item(item_json));
+                api.items.push(Item(api, item_json));
             });
         });
     };
@@ -56,15 +48,31 @@ app.service("api", ["$http", "Item", function($http, Item) {
 }]);
 
 app.factory("Item", ["$http", function($http) {
-    function Item(itemData) {
+    function Item(api, itemData) {
         var item = new Object();
         angular.extend(item, itemData);
+        item.api = api;
 
         item.enable_graph = function() {
             return item.tags.indexOf("webui.enable_graph") >= 0;
         }
+
+        item.disabled = function(disabled) {
+            if(disabled === undefined) {
+                return !item.enabled;
+            } else {
+                item.enabled = !disabled;
+            }
+        };
         item.show_disable = function() {
             return item.tags.indexOf("webui.show_disable") >= 0;
+        }
+        item.send_disable = function() {
+          if(item.enabled) {
+            api.get("item/" + item.id + "/enable");
+          } else {
+            api.get("item/" + item.id + "/disable");
+          }
         }
 
         return item;
@@ -106,13 +114,6 @@ $(function() {
                 elm.data("action", "enter");
             }
 	    });
-    });
-
-    $(".disable").each(function() {
-      var elm = $(this);
-      elm.click(function(evt) {
-        do_disable(elm.data("item"), elm.prop("checked"));
-      });
     });
 
     $("form").submit(function(){return false;});

@@ -39,13 +39,13 @@
             <div class="col s6 m1">
               <div ng-if="item.show_disable()">
                 <input type="checkbox"
-                       id="disable_{{ item.name }}"
-                       class="disable filled-in"
-                       data-item="{{ item.name }}"
-                       value="true"
-                       {% if item.disabled %}checked="checked"{% endif %}
+                       id="disable_{{item.id}}"
+                       class="filled-in"
+                       ng-model="item.disabled"
+                       ng-model-options="{ getterSetter: true }"
+                       ng-change="item.send_disable()"
                        />
-                <label for="disable_{{ item.name }}">Disable</label>
+                <label for="disable_{{item.id}}">Disable</label>
               </div>
               <div ng-if="!item.show_disable()">
                 &nbsp;
