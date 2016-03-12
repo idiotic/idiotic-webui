@@ -65,6 +65,10 @@ app.factory("Item", ["$http", function($http) {
         item.api = api;
 
         item.send_state = function() {
+            if(item.state === undefined) {
+                console.log("Item", item.id, "refusing to send undefined state");
+                return;
+            }
             return item.send_command("set?val=" + item.state);
         }
 

@@ -55,6 +55,7 @@
                 <input type="number"
                        id="item_{{item.id}}_number"
                        class="command"
+                       ng-required="true"
                        ng-disabled="item.disabled()"
                        ng-model="item.state"
                        ng-change="item.send_state()"
