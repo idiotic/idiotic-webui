@@ -18,9 +18,14 @@ function do_scene(scene, action) {
 
 var app = angular.module("idiotic", []);
 app.factory("Api", ["$http", "Item", function($http, Item) {
-    function Api(api_root) {
+    function Api(api_root, refresh_callback) {
         var api = new Object();
         api.api_url = api_root + 'api/';
+        if(refresh_callback) {
+            api.refresh_callback = refresh_callback;
+        } else {
+            api.refresh_callback = function() {};
+        }
 
         api.items = [];
 
@@ -49,18 +54,17 @@ app.factory("Api", ["$http", "Item", function($http, Item) {
 
         api.refresh = function() {
             console.log('Refreshing API from', api.api_url);
-            api.get('items').then(function(items_json) {
+            return api.get('items').then(function(items_json) {
                 api.items = [];
                 angular.forEach(items_json, function(item_json) {
                     api.items.push(Item(api, item_json));
                 });
-            });
+            }).then(api.refresh_callback);
         };
 
         api.refresh();
         return api;
     };
-    console.log(Api);
     return Api;
 }]);
 
@@ -115,14 +119,68 @@ app.controller("idioticController", ["$scope", "$http", "Api", function($scope, 
 
     // Give empty array until API is loaded.
     idiotic.items = function() { return []; }
+    idiotic.conf = new Object();
+
+    idiotic.refresh = function() {
+        idiotic.refresh_scenes();
+    }
+    idiotic.refresh_scenes = function () {
+        console.log('here');
+        var sections = [];
+        for (section_index in idiotic.conf.sections) {
+            console.log(section_index);
+            var section = idiotic.conf.sections[section_index];
+            // Prepare a new section object with an items() method.
+            var s = new Object();
+            s.include_tags = [];
+            s.exclude_tags = [];
+            angular.extend(s, section);
+            console.log(s);
+
+            s.items = function() {
+                var items = [];
+                for (item_index in idiotic.items()) {
+                    var item = idiotic.items()[item_index];
+                    // For each item, check its tags against our lists. Include
+                    // it only if there is at least one tag matching
+                    // include_tags, and exactly zero tags matching
+                    // exclude_tags.
+                    var include = false;
+                    for(tag_index in item.tags) {
+                        var tag = item.tags[tag_index];
+                        // If the tag is excluded, reject immediately.
+                        if(this.exclude_tags.indexOf(tag) >= 0) {
+                            include = false;
+                            break;
+                        }
+                        // If the tag is included, mark for inclusion and
+                        // continue to look for excluded tags.
+                        if(this.include_tags.indexOf(tag) >= 0) {
+                            include = true;
+                        }
+                    }
+                    if(include) {
+                        console.log('Section', this.title, 'adding', item.name);
+                        items.push(item);
+                    }
+                }
+                return items;
+            }
+
+            sections.push(s);
+        }
+
+        idiotic.sections = sections;
+    }
 
     $http.get("/webui_conf.json").then(function(resp) {
         console.log('WebUI configuration loaded');
         idiotic.conf = resp.data;
 
-        idiotic.api = Api(idiotic.conf.api_base);
+        idiotic.api = Api(idiotic.conf.api_base, idiotic.refresh);
         idiotic.items = function() { return idiotic.api.items; };
     });
+
 }]);
 
 $(function() {
