@@ -8,7 +8,7 @@ import datetime
 import requests
 import functools
 from flask import Response, request
-from idiotic import dispatcher, event, items, scenes, utils
+from idiotic import event, utils
 from idiotic.item import Toggle, Trigger, Number, Motor, Text
 from idiotic.scene import Scene
 
