@@ -8,61 +8,61 @@
       {# Jinja2 raw so Angular templates can be processed. #}
       {% raw %}
       <div ng-repeat="section in idiotic.sections"
-         id="{{section.title}}"
-         class="scrollspy">
+           id="{{section.title}}"
+           class="scrollspy">
         <h2>{{section.title}}</h2>
         <div ng-repeat="item in section.items() track by item.id">
-        <form id="controls_form_{{item.id}}" class="controls-form">
-          <div class="row">
-            <div class="col s1">
-              <i id="state_{{item.id}}"
-                 class="tiny material-icons cyan-text text-darken-2 right"
-                 ng-switch="item.state">
-                <div ng-switch-when="true">radio_button_checked</div>
-                <div ng-switch-when="false">radio_button_unchecked</div>
-                <div ng-switch-default>&nbsp;</div>
-              </i>
-            </div>
-            <div class="col s2 m1">
-              <a class="graph_link" href="graph/{{item.id}}.svg"
-                 ng-if="item.enable_graph()">
-                <i class="material-icons hoverable black-text">insert_chart</i>
-              </a>
-              <div ng-if="!item.enable_graph()">
-                &nbsp;
+          <form id="controls_form_{{item.id}}" class="controls-form">
+            <div class="row">
+              <div class="col s1">
+                <i id="state_{{item.id}}"
+                   class="tiny material-icons cyan-text text-darken-2 right"
+                   ng-switch="item.state">
+                  <div ng-switch-when="true">radio_button_checked</div>
+                  <div ng-switch-when="false">radio_button_unchecked</div>
+                  <div ng-switch-default>&nbsp;</div>
+                </i>
               </div>
-            </div>
-            <div class="col s9 m3">
-              <span id="label_{{item.id}}" class="truncate">{{item.name}}</span>
-            </div>
-            <div class="col s12 m6" ng-switch="item.type">
-              <input ng-switch-when="Text"
-                     id="item_{{item.id}}_text"
-                     type="text"
-                     class="command"
-                     ng-disabled="item.disabled"
-                     ng-model="item.state"
-                     />
-              <div ng-switch-when="Toggle">
-                <input ng-repeat="command in item.commands"
+              <div class="col s2 m1">
+                <a class="graph_link" href="graph/{{item.id}}.svg"
+                                      ng-if="item.enable_graph()">
+                  <i class="material-icons hoverable black-text">insert_chart</i>
+                </a>
+                <div ng-if="!item.enable_graph()">
+                  &nbsp;
+                </div>
+              </div>
+              <div class="col s9 m3">
+                <span id="label_{{item.id}}" class="truncate">{{item.name}}</span>
+              </div>
+              <div class="col s12 m6" ng-switch="item.type">
+                <input ng-switch-when="Text"
+                       id="item_{{item.id}}_text"
+                       type="text"
+                       class="command"
+                       ng-disabled="item.disabled"
+                       ng-model="item.state"
+                       />
+                <input ng-switch-when="Toggle"
+                       ng-repeat="command in item.commands"
                        id="item_{{item.id}}_command_{{command}}"
                        type="button"
                        class="command btn waves-light"
                        value="{{command}}"
                        ng-disabled="item.disabled()"
                        ng-click="item.send_command(command)"
+                       style="margin: 0px 2px;"
                        />
-              </div>
-              <div ng-switch-when="Number">
-                <input type="number"
-                       id="item_{{item.id}}_number"
-                       class="command"
-                       ng-required="true"
-                       ng-disabled="item.disabled()"
-                       ng-model="item.state"
-                       ng-change="item.send_state()"
-                       />
-              </div>
+                <div ng-switch-when="Number">
+                  <input type="number"
+                         id="item_{{item.id}}_number"
+                         class="command"
+                         ng-required="true"
+                         ng-disabled="item.disabled()"
+                         ng-model="item.state"
+                         ng-change="item.send_state()"
+                         />
+                </div>
               <span ng-switch-default>&nbsp;</span>
             </div>
             <div class="col s6 m1">
