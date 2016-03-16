@@ -125,17 +125,14 @@ app.controller("idioticController", ["$scope", "$http", "Api", function($scope, 
         idiotic.refresh_scenes();
     }
     idiotic.refresh_scenes = function () {
-        console.log('here');
         var sections = [];
         for (section_index in idiotic.conf.sections) {
-            console.log(section_index);
             var section = idiotic.conf.sections[section_index];
             // Prepare a new section object with an items() method.
             var s = new Object();
             s.include_tags = [];
             s.exclude_tags = [];
             angular.extend(s, section);
-            console.log(s);
 
             s.items = function() {
                 var items = [];
@@ -160,7 +157,6 @@ app.controller("idioticController", ["$scope", "$http", "Api", function($scope, 
                         }
                     }
                     if(include) {
-                        console.log('Section', this.title, 'adding', item.name);
                         items.push(item);
                     }
                 }
