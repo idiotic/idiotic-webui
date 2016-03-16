@@ -86,26 +86,26 @@
         </div>
       </div>
     </div>
+
+    <div class="col hide-on-small-only m3 l2">
+      <div id="toc">
+        <h5>Sections</h5>
+        <ul class="section table-of-contents" style="white-space: nowrap;">
+          {%- for section in sections %}
+          <li><a href="#{{section.title | replace(" ", "_") | lower}}">{{section.title}}</a></li>
+          {%- endfor %}
+        </ul>
+      </div>
+    </div>
   </div>
 </div>
 
 {#
-      <div class="col s6 m4">
-        {%- if item.show_sparkline %}
-        <embed type="image/svg+xml" src="sparkline/{{ item.name }}.svg"/>
-          {%- endif %}
-      </div>
-#}
-
-<div class="col hide-on-small-only m3 l2">
-  <div id="toc">
-    <h5>Sections</h5>
-    <ul class="section table-of-contents" style="white-space: nowrap;">
-      {%- for section in sections %}
-      <li><a href="#{{section.title | replace(" ", "_") | lower}}">{{section.title}}</a></li>
-      {%- endfor %}
-    </ul>
-  </div>
+<div class="col s6 m4">
+  {%- if item.show_sparkline %}
+  <embed type="image/svg+xml" src="sparkline/{{ item.name }}.svg"/>
+    {%- endif %}
 </div>
+#}
 
 {% endblock %}
