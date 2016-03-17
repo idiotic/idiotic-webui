@@ -122,7 +122,12 @@ app.controller("idioticController", ["$scope", "$http", "Api", function($scope, 
     idiotic.conf = new Object();
 
     idiotic.refresh = function() {
-        idiotic.refresh_scenes();
+        // Run all refresh functions, and broadcast when complete.
+        Promise.all([
+                idiotic.refresh_scenes()
+        ]).then(function() {
+                $scope.$broadcast('idioticLoaded');
+            });
     }
     idiotic.refresh_scenes = function () {
         var sections = [];
