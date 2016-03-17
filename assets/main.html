@@ -61,26 +61,31 @@
                          ng-change="item.send_state()"
                          />
                 </div>
-              <span ng-switch-default>&nbsp;</span>
-            </div>
-            <div class="col s6 m1">
-              <div ng-if="item.show_disable()">
-                <input type="checkbox"
-                       id="disable_{{item.id}}"
-                       class="filled-in"
-                       ng-model="item.disabled"
-                       ng-model-options="{ getterSetter: true }"
-                       ng-change="item.send_disable()"
-                       />
-                <label for="disable_{{item.id}}">Disable</label>
+                <span ng-switch-default>&nbsp;</span>
               </div>
-              <div ng-if="!item.show_disable()">
-                &nbsp;
+              <div class="col s6 m1">
+                <div ng-if="item.show_disable()">
+                  <input type="checkbox"
+                         id="disable_{{item.id}}"
+                         class="filled-in"
+                         ng-model="item.disabled"
+                         ng-model-options="{ getterSetter: true }"
+                         ng-change="item.send_disable()"
+                         />
+                  <label for="disable_{{item.id}}">Disable</label>
+                </div>
+                <div ng-if="!item.show_disable()">
+                  &nbsp;
+                </div>
+              </div>
+              <div class="col s6 m4">
+                <img ng-if="item.enable_graph()"
+                       type="image/svg+xml"
+                       ng-src="sparkline/{{item.id}}.svg"/>
               </div>
             </div>
-          </div>
-        </form>
-        {% endraw %}
+          </form>
+          {% endraw %}
         </div>
       </div>
     </div>
@@ -100,12 +105,5 @@
   </div>
 </div>
 
-{#
-<div class="col s6 m4">
-  {%- if item.show_sparkline %}
-  <embed type="image/svg+xml" src="sparkline/{{ item.name }}.svg"/>
-    {%- endif %}
-</div>
-#}
 
 {% endblock %}

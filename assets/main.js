@@ -87,7 +87,7 @@ app.factory("Item", ["$http", function($http) {
         }
 
         item.enable_graph = function() {
-            return item.tags.indexOf("webui.enable_graph") >= 0;
+            return item.tags.indexOf("webui.show_sparkline") >= 0;
         }
 
         item.disabled = function(disabled) {
