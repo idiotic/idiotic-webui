@@ -7,10 +7,8 @@
     <div class="col s12 m9 l10">
       {# Jinja2 raw so Angular templates can be processed. #}
       {% raw %}
-      <div ng-repeat="section in idiotic.sections"
-           id="{{section.title}}"
-           class="scrollspy">
-        <h2>{{section.title}}</h2>
+      <div ng-repeat="section in idiotic.sections">
+        <h2 id="{{slug(section.title)}}" scrollspy>{{section.title}}</h2>
         <div ng-repeat="item in section.items() track by item.id">
           <form id="controls_form_{{item.id}}" class="controls-form">
             <div class="row">

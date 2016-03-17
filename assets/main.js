@@ -177,6 +177,19 @@ app.controller("idioticController", ["$scope", "$http", "Api", function($scope, 
         idiotic.items = function() { return idiotic.api.items; };
     });
 
+    $scope.slug = function(s) {
+        return s.toLowerCase().replace(' ', '_');
+    };
+}]);
+
+app.directive('scrollspy', ['$timeout', function($timeout) {
+    return {
+        link: function($scope, element, attrs) {
+            $timeout(function() {
+                $(element).scrollSpy();
+            }, 0);
+        }
+    };
 }]);
 
 $(function() {
