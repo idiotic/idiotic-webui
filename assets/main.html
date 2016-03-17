@@ -89,9 +89,11 @@
       <div id="toc">
         <h5>Sections</h5>
         <ul class="section table-of-contents" style="white-space: nowrap;">
-          {%- for section in sections %}
-          <li><a href="#{{section.title | replace(" ", "_") | lower}}">{{section.title}}</a></li>
-          {%- endfor %}
+          {% raw %}
+          <li ng-repeat="section in idiotic.sections">
+            <a href="#{{slug(section.title)}}">{{section.title}}</a>
+          </li>
+          {% endraw %}
         </ul>
       </div>
     </div>
