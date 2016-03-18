@@ -3,6 +3,7 @@
 """
 
 import jinja2
+import json
 import logging
 import datetime
 import requests
@@ -51,6 +52,7 @@ def configure(config, api, assets):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(asset_path))
 
     api.add_url_rule('/main.js', '_main_js', _main_js)
+    api.add_url_rule('/webui_conf.json', '__webui_conf', _webui_conf(config))
     api.add_url_rule('/sparkline/<item>.svg', '_sparkline', _sparkline)
     api.add_url_rule('/graph/<item>.svg', '_graph', _graph)
 
@@ -87,70 +89,15 @@ def scene(name, command=None, **kwargs):
 
 def _main_page(sections, *_, **__):
     args = dict(template_args)
-    args["sections"] = []
-    for section in sections:
-        include_tags, exclude_tags, include_items, exclude_items = (
-            set(section.get(n, [])) for n in SECT_INCLUDE
-        )
-        sect = {"item_list": []}
-        sect.update({k: v for k, v in section.items()
-                     if k not in SECT_INCLUDE})
-
-        for item in sorted(list(items.all()) + list(scenes.all()), key=lambda i:i.name):
-            if not _include_item(item, include_tags, exclude_tags,
-                                 include_items, exclude_items):
-                continue
-
-            item_dict = {
-                "desc": item.name,
-                "name": utils.mangle_name(item.name),
-                "show_disable": "webui.show_disable" in item.tags,
-                "show_sparkline": "webui.show_sparkline" in item.tags,
-                "enable_graph": default_graph,
-                "state": getattr(item, "state", getattr(item, "active", None)),
-                "disabled": not getattr(item, "enabled", False)
-            }
-
-            if "webui.enable_graph" in item.tags:
-                item_dict["enable_graph"] = True
-            elif "webui.disable_graph" in item.tags:
-                item_dict["enable_graph"] = False
-
-            if isinstance(item, Number):
-                item_dict["inputs"] = [{"command": "set",
-                                        "type": "number"}]
-            elif isinstance(item, Text):
-                item_dict["inputs"] = [{"command": "set",
-                                        "type": "text"}]
-            elif isinstance(item, Toggle):
-                item_dict["inputs"] = [{"command": "on",
-                                        "type": "button"},
-                                       {"command": "off",
-                                        "type": "button"},
-                                       {"command": "toggle",
-                                        "type": "button"}]
-            elif isinstance(item, Trigger):
-                item_dict["inputs"] = [{"command": "trigger",
-                                        "type": "button"}]
-            elif isinstance(item, Motor):
-                item_dict["inputs"] = [{"command": "forward",
-                                        "type": "button"},
-                                       {"command": "reverse",
-                                        "type": "button"},
-                                       {"command": "stop",
-                                        "type": "button"}]
-            elif isinstance(item, Scene):
-                item_dict["inputs"] = [{"type": "scene"}]
-            else:
-                item_dict["inputs"] = []
-
-            sect["item_list"].append(item_dict)
-        args["sections"].append(dict(sect))
-
     return Response(env.get_template('main.html').render(**args), mimetype='text/html')
 
 def _main_js(*_, **__):
     return Response(env.get_template('main.js').render(), mimetype='text/javascript')
+
+def _webui_conf(config):
+    def __webui_conf(*_, **__):
+        return Response(json.dumps(config), mimetype='application/json')
+    return __webui_conf
 
 def __empty_svg():
     return """<?xml version="1.0" encoding="UTF-8" standalone="no"?> <svg

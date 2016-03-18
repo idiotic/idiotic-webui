@@ -1,127 +1,114 @@
 {% extends 'base.html' %}
 
-{% block toc %}
-<h5>Sections</h5>
-<ul class="section table-of-contents" style="white-space: nowrap;">
-  {%- for section in sections %}
-  <li><a href="#{{section.title | replace(" ", "_") | lower}}">{{section.title}}</a></li>
-  {%- endfor %}
-</ul>
-{% endblock %}
+{% block main %}
+{# Jinja2 raw so Angular templates can be processed. #}
+{% raw %}
 
-
-{% block controls %}
-
-{%- for section in sections %}
-<div id="{{section.title | replace(" ", "_") | lower}}" class="scrollspy">
-<h2>{{ section.title }}</h2>
-{%- for item in section.item_list %}
-<form id="controls_form_{{ item.name }}" class="controls-form">
-  <div class="row">
-    <div class="col s1">
-      {%- if item.state != None %}
-        <i id="state_{{ item.name }}" class="tiny material-icons cyan-text text-darken-2 right">
-          {%- if item.state %}
-          radio_button_checked
-          {%- else %}
-          radio_button_unchecked
-          {%- endif %}
-        </i>
-      {%- else %}
-        {# This else statement is needed to maintain spacing. #}
-        &nbsp;
-      {%- endif %}
-    </div>
-    <div class="col s2 m1">
-    {%- if item.enable_graph %}
-      <a class="graph_link" href="graph/{{ item.name }}.svg">
-        <i class="material-icons hoverable black-text">insert_chart</i>
-      </a>
-    {%- endif %}
-    </div>
-    <div class="col s9 m3">
-      <span id="label_{{ item.name }}" class="truncate">{{ item.desc }}</span>
-    </div>
-    <div class="col s12 m6">
-    {%- for input in item.inputs %}
-      {%- if input.type == "text" %}
-        <input {% if item.disabled %}disabled="disabled"{% endif %}
-               type="text"
-               id="command_{{ item.name }}_{{ input.command }}"
-               class="command" data-item="{{ item.name }}"
-               data-command="{{ input.command }}"
-               data-use-val="true"
-               data-event="change"
-               {%- if item.state != None %}value="{{ item.state }}"{% endif %}
-               />
-      {%- elif input.type == "button" %}
-        <input {% if item.disabled %}disabled="disabled"{% endif %}
-               type="button"
-               id="command_{{ item.name }}_{{ input.command }}"
-               class="command btn waves-light"
-               data-item="{{ item.name }}"
-               data-command="{{ input.command }}"
-               data-use-val="false"
-               data-event="click"
-               value="{{ input.command|title }}"
-               />
-      {%- elif input.type == "number" %}
-        <input {% if item.disabled %}disabled="disabled"{% endif %}
-               type="number"
-               id="command_{{ item.name }}_{{ input.command }}"
-               class="command"
-               data-item="{{ item.name }}"
-               data-command="{{ input.command }}"
-               data-use-val="true"
-               data-event="change"
-               {%- if item.state != None %} value="{{ item.state }}"{% endif %}
-               />
-      {%- elif input.type == "checkbox" %}
-        <input {% if item.disabled %}disabled="disabled"{% endif %}
-               type="checkbox"
-               id="command_{{ item.name }}_{{ input.command }}"
-               class="command"
-               data-item="{{ item.name }}"
-               data-command="{{ input.command }}"
-               data-use-val="true"
-               data-event="click"/>
-      {%- elif input.type == "scene" %}
-        <div class="switch">
-          <label>
-            Exit
-            <input type="checkbox"
-                   id="scene_enter_{{ item.name }}"
-                   class="scene-control scene-enter btn waves-light"
-                   data-scene="{{ item.name }}"
-                   data-action="{{ "exit" if item.state else "enter" }}"
-                   {% if item.state %}checked=""{% endif %}/>
-            <span class="lever"></span>
-            Enter
-          </label>
+<div class="container" ng-controller="idioticController as idiotic">
+  <div id="page-top" class="row">
+    <div class="col s12 m9 l10">
+      <div ng-repeat="section in idiotic.sections">
+        <h2 id="{{slug(section.title)}}" scrollspy>{{section.title}}</h2>
+        <div ng-repeat="item in section.items() track by item.id">
+          <form id="controls_form_{{item.id}}" class="controls-form">
+            <div class="row">
+              <div class="col s1">
+                <i id="state_{{item.id}}"
+                   class="tiny material-icons cyan-text text-darken-2 right"
+                   ng-switch="item.state">
+                  <div ng-switch-when="true">radio_button_checked</div>
+                  <div ng-switch-when="false">radio_button_unchecked</div>
+                  <div ng-switch-default>&nbsp;</div>
+                </i>
+              </div>
+              <div class="col s2 m1">
+                <a class="graph_link" href="graph/{{item.id}}.svg"
+                                      ng-if="item.enable_graph()">
+                  <i class="material-icons hoverable black-text">insert_chart</i>
+                </a>
+                <div ng-if="!item.enable_graph()">
+                  &nbsp;
+                </div>
+              </div>
+              <div class="col s9 m3">
+                <span id="label_{{item.id}}" class="truncate">{{item.name}}</span>
+              </div>
+              <div class="col s12 m6" ng-switch="item.type">
+                <input ng-switch-when="Text"
+                       id="item_{{item.id}}_text"
+                       type="text"
+                       class="command"
+                       ng-disabled="item.disabled"
+                       ng-model="item.state"
+                       />
+                <input ng-switch-when="Toggle"
+                       ng-repeat="command in item.commands"
+                       id="item_{{item.id}}_command_{{command}}"
+                       type="button"
+                       class="command btn waves-light"
+                       value="{{command}}"
+                       ng-disabled="item.disabled()"
+                       ng-click="item.send_command(command)"
+                       style="margin: 0px 2px;"
+                       />
+                <div ng-switch-when="Number">
+                  <input type="number"
+                         id="item_{{item.id}}_number"
+                         class="command"
+                         ng-required="true"
+                         ng-disabled="item.disabled()"
+                         ng-model="item.state"
+                         ng-change="item.send_state()"
+                         />
+                </div>
+                <div ng-switch-when="Scene" class="switch">
+                  <label>
+                    Exit
+                    <input type="checkbox"
+                           id="scene_{{item.id}}"
+                           type="text"
+                           ng-model="item.state"
+                           ng-click="item.send_activity()"
+                           />
+                    <span class="lever"></span>
+                    Enter
+                  </label>
+                </div>
+                <span ng-switch-default>&nbsp;</span>
+              </div>
+              <div class="col s6 m1">
+                <div ng-if="item.show_disable()">
+                  <input type="checkbox"
+                         id="disable_{{item.id}}"
+                         class="filled-in"
+                         ng-model="item.disabled"
+                         ng-model-options="{ getterSetter: true }"
+                         ng-change="item.send_disable()"
+                         />
+                  <label for="disable_{{item.id}}">Disable</label>
+                </div>
+                <div ng-if="!item.show_disable()">
+                  &nbsp;
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
-      {%- endif %}
-    {%- endfor %}
+      </div>
     </div>
-    <div class="col s6 m1">
-      {%- if item.show_disable %}
-        <input type="checkbox"
-               id="disable_{{ item.name }}"
-               class="disable filled-in"
-               data-item="{{ item.name }}"
-               value="true"
-               {% if item.disabled %}checked="checked"{% endif %}
-               />
-        <label for="disable_{{ item.name }}">Disable</label>
-      {%- endif %}
-    </div>
-    <div class="col s6 m4">
-    {%- if item.show_sparkline %}
-      <embed type="image/svg+xml" src="sparkline/{{ item.name }}.svg"/>
-    {%- endif %}
+
+    <div class="col hide-on-small-only m3 l2">
+      <div id="toc">
+        <h5>Sections</h5>
+        <ul class="section table-of-contents" style="white-space: nowrap;">
+          <li ng-repeat="section in idiotic.sections">
+            <a href="#{{slug(section.title)}}">{{section.title}}</a>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
-</form>
-{% endfor %}
 </div>
-{% endfor %}
+
+{% endraw %}
 {% endblock %}
