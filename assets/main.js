@@ -35,19 +35,19 @@ app.factory("Api", ["$http", "Item", function($http, Item) {
                     console.log('GET', api.api_url + endpoint + ' successful');
                     return resp.data.result;
                 } else {
-                    console.log('GET', api.api_url + endpoint + ' FAILED ' + resp.data.result);
-                    throw resp.data.result;
+                    console.log('GET', api.api_url + endpoint + ' FAILED')
+                    throw resp.data;
                 }
             });
         };
         api.post = function(endpoint, data) {
             return $http.post(encodeURI(api.api_url + endpoint), data).then(function(resp) {
                 if(resp.data.status == "success") {
-                    console.log('GET', api.api_url + endpoint + ' successful');
+                    console.log('POST', api.api_url + endpoint + ' successful');
                     return resp.data.result;
                 } else {
-                    console.log('GET', api.api_url + endpoint + ' FAILED ' + resp.data.result);
-                    throw resp.data.result;
+                    console.log('POST', api.api_url + endpoint + ' FAILED')
+                    throw resp.data;
                 }
             });
         };
