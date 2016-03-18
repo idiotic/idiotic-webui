@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block main %}
+{# Jinja2 raw so Angular templates can be processed. #}
+{% raw %}
 
 <div class="container" ng-controller="idioticController as idiotic">
   <div id="page-top" class="row">
     <div class="col s12 m9 l10">
-      {# Jinja2 raw so Angular templates can be processed. #}
-      {% raw %}
       <div ng-repeat="section in idiotic.sections">
         <h2 id="{{slug(section.title)}}" scrollspy>{{section.title}}</h2>
         <div ng-repeat="item in section.items() track by item.id">
@@ -93,7 +93,6 @@
               </div>
             </div>
           </form>
-          {% endraw %}
         </div>
       </div>
     </div>
@@ -102,16 +101,14 @@
       <div id="toc">
         <h5>Sections</h5>
         <ul class="section table-of-contents" style="white-space: nowrap;">
-          {% raw %}
           <li ng-repeat="section in idiotic.sections">
             <a href="#{{slug(section.title)}}">{{section.title}}</a>
           </li>
-          {% endraw %}
         </ul>
       </div>
     </div>
   </div>
 </div>
 
-
+{% endraw %}
 {% endblock %}

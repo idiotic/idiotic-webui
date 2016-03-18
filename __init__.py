@@ -89,66 +89,6 @@ def scene(name, command=None, **kwargs):
 
 def _main_page(sections, *_, **__):
     args = dict(template_args)
-    args["sections"] = []
-    for section in sections:
-        include_tags, exclude_tags, include_items, exclude_items = (
-            set(section.get(n, [])) for n in SECT_INCLUDE
-        )
-        sect = {"item_list": []}
-        sect.update({k: v for k, v in section.items()
-                     if k not in SECT_INCLUDE})
-
-        for item in sorted(list(items.all()) + list(scenes.all()), key=lambda i:i.name):
-            if not _include_item(item, include_tags, exclude_tags,
-                                 include_items, exclude_items):
-                continue
-
-            item_dict = {
-                "desc": item.name,
-                "name": utils.mangle_name(item.name),
-                "show_disable": "webui.show_disable" in item.tags,
-                "show_sparkline": "webui.show_sparkline" in item.tags,
-                "enable_graph": default_graph,
-                "state": getattr(item, "state", getattr(item, "active", None)),
-                "disabled": not getattr(item, "enabled", False)
-            }
-
-            if "webui.enable_graph" in item.tags:
-                item_dict["enable_graph"] = True
-            elif "webui.disable_graph" in item.tags:
-                item_dict["enable_graph"] = False
-
-            if isinstance(item, Number):
-                item_dict["inputs"] = [{"command": "set",
-                                        "type": "number"}]
-            elif isinstance(item, Text):
-                item_dict["inputs"] = [{"command": "set",
-                                        "type": "text"}]
-            elif isinstance(item, Toggle):
-                item_dict["inputs"] = [{"command": "on",
-                                        "type": "button"},
-                                       {"command": "off",
-                                        "type": "button"},
-                                       {"command": "toggle",
-                                        "type": "button"}]
-            elif isinstance(item, Trigger):
-                item_dict["inputs"] = [{"command": "trigger",
-                                        "type": "button"}]
-            elif isinstance(item, Motor):
-                item_dict["inputs"] = [{"command": "forward",
-                                        "type": "button"},
-                                       {"command": "reverse",
-                                        "type": "button"},
-                                       {"command": "stop",
-                                        "type": "button"}]
-            elif isinstance(item, Scene):
-                item_dict["inputs"] = [{"type": "scene"}]
-            else:
-                item_dict["inputs"] = []
-
-            sect["item_list"].append(item_dict)
-        args["sections"].append(dict(sect))
-
     return Response(env.get_template('main.html').render(**args), mimetype='text/html')
 
 def _main_js(*_, **__):
