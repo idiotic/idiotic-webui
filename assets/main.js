@@ -183,7 +183,7 @@ app.controller("idioticController", ["$scope", "$http", "Api", function($scope, 
     });
 
     $scope.slug = function(s) {
-        return s.toLowerCase().replace(' ', '_');
+        return s.toLowerCase().replace(/ /g, '_');
     };
 }]);
 
