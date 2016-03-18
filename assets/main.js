@@ -17,7 +17,7 @@ function do_scene(scene, action) {
 }
 
 var app = angular.module("idiotic", []);
-app.factory("Api", ["$http", "Item", function($http, Item) {
+app.factory("Api", ["$http", "Item", "Scene", function($http, Item, Scene) {
     function Api(api_root, refresh_callback) {
         var api = new Object();
         api.api_url = api_root + 'api/';
@@ -54,11 +54,19 @@ app.factory("Api", ["$http", "Item", function($http, Item) {
 
         api.refresh = function() {
             console.log('Refreshing API from', api.api_url);
+            // TODO: Parallelize
             return api.get('items').then(function(items_json) {
-                api.items = [];
-                angular.forEach(items_json, function(item_json) {
-                    api.items.push(Item(api, item_json));
-                });
+                        api.items = [];
+                        angular.forEach(items_json, function(item_json) {
+                            api.items.push(Item(api, item_json));
+                        });
+                    }).then(function() {
+                    api.get('scenes').then(function(scenes_json) {
+                        api.scenes = [];
+                        angular.forEach(scenes_json, function(scene_json) {
+                            api.scenes.push(Scene(api, scene_json));
+                        });
+                    })
             }).then(api.refresh_callback);
         };
 
@@ -114,22 +122,43 @@ app.factory("Item", ["$http", function($http) {
     return Item;
 }]);
 
+app.factory("Scene", ["$http", function($http) {
+    function Scene(api, sceneData) {
+        var scene = new Object();
+        angular.extend(scene, sceneData);
+        scene.api = api;
+
+        scene.id = scene.name.toLowerCase().replace(/ /g, '_');
+        scene.state = scene.active;
+
+        scene.send_activity = function() {
+            var enterexit = scene.state ? "enter" : "exit";
+            return api.get("scene/" + scene.id + "/command/" + enterexit);
+        };
+
+        return scene;
+    };
+
+    return Scene;
+}]);
+
 app.controller("idioticController", ["$scope", "$http", "Api", function($scope, $http, Api) {
     var idiotic = this;
 
     // Give empty array until API is loaded.
     idiotic.items = function() { return []; }
+    idiotic.scenes = function() { return []; }
     idiotic.conf = new Object();
 
     idiotic.refresh = function() {
         // Run all refresh functions, and broadcast when complete.
         Promise.all([
-                idiotic.refresh_scenes()
+                idiotic.refresh_sections()
         ]).then(function() {
                 $scope.$broadcast('idioticLoaded');
             });
     }
-    idiotic.refresh_scenes = function () {
+    idiotic.refresh_sections = function () {
         var sections = [];
         for (section_index in idiotic.conf.sections) {
             var section = idiotic.conf.sections[section_index];
@@ -138,6 +167,13 @@ app.controller("idioticController", ["$scope", "$http", "Api", function($scope, 
             s.include_tags = [];
             s.exclude_tags = [];
             angular.extend(s, section);
+
+            // TODO: this is a hack and awful
+            if (section.include_tags.indexOf("_scene") >= 0) {
+                s.items = idiotic.scenes;
+                sections.push(s);
+                continue;
+            }
 
             s.items = function() {
                 var items = [];
@@ -180,6 +216,7 @@ app.controller("idioticController", ["$scope", "$http", "Api", function($scope, 
 
         idiotic.api = Api(idiotic.conf.api_base, idiotic.refresh);
         idiotic.items = function() { return idiotic.api.items; };
+        idiotic.scenes = function() { return idiotic.api.scenes; };
     });
 
     $scope.slug = function(s) {
