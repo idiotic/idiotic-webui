@@ -91,7 +91,11 @@ app.factory("Item", ["$http", function($http) {
         }
 
         item.send_command = function(command) {
-            return api.get("item/" + item.id + "/command/" + command);
+            return api.get("item/" + item.id + "/command/" + command)
+                .then(function(result) {
+                    // Update our models.
+                    angular.extend(item, result.item);
+                });
         }
 
         item.enable_graph = function() {
