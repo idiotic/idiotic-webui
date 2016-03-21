@@ -112,3 +112,11 @@
 
 {% endraw %}
 {% endblock %}
+
+{% block scripts %}
+<script>
+$(function() {
+    $("#toc").pushpin({top: $("#page-top").offset().top });
+});
+</script>
+{% endblock %}

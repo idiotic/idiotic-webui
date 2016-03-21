@@ -1,21 +1,3 @@
-function do_api(url, data) {
-    console.log('API REQUEST ' + url);
-    $.get(url, data);
-}
-
-function do_command(item, command, val) {
-    var data = {};
-
-    if (val != undefined) {
-	  data["val"] = val;
-    }
-    do_api("/api/item/" + item + "/command/" + command, data);
-}
-
-function do_scene(scene, action) {
-    do_api("/api/scene/" + scene + "/command/" + (action?action:""));
-}
-
 var app = angular.module("idiotic", []);
 app.factory("Api", ["$http", "Item", "Scene", function($http, Item, Scene) {
     function Api(api_root, refresh_callback) {
@@ -237,34 +219,3 @@ app.directive('scrollspy', ['$timeout', function($timeout) {
         }
     };
 }]);
-
-$(function() {
-    $("#toc").pushpin({top: $("#page-top").offset().top });
-    $(".scrollspy").scrollSpy();
-
-    $(".command").each(function() {
-	var elm = $(this);
-	elm.on(elm.data("event"), function() {
-	    if (elm.data("use-val")) {
-		do_command(elm.data("item"), elm.data("command"), elm.val());
-	    } else {
-		do_command(elm.data("item"), elm.data("command"));
-	    }
-	});
-    });
-
-    $(".scene-control").each(function() {
-	    var elm = $(this);
-	    elm.click(function(evt) {
-            if(elm.data("action") == "enter") {
-	            do_scene(elm.data("scene"), "enter");
-                elm.data("action", "exit");
-            } else {
-                do_scene(elm.data("scene"), "exit");
-                elm.data("action", "enter");
-            }
-	    });
-    });
-
-    $("form").submit(function(){return false;});
-});
