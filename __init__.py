@@ -51,43 +51,15 @@ def configure(config, api, assets):
     asset_path = assets
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(asset_path))
 
+    api.add_url_rule('/', '_main_page', _main_page)
     api.add_url_rule('/main.js', '_main_js', _main_js)
     api.add_url_rule('/webui_conf.json', '__webui_conf', _webui_conf(config))
     api.add_url_rule('/sparkline/<item>.svg', '_sparkline', _sparkline)
     api.add_url_rule('/graph/<item>.svg', '_graph', _graph)
 
-    traverse(api, "/", config)
-
     return
 
-def traverse(api, path, tree):
-    if not tree:
-        return
-
-    sections = []
-    if "sections" in tree:
-        sections = tree["sections"]
-    else:
-        sections = [{k: tree[k] for k in tree
-                     if k in SECT_INCLUDE }]
-
-    api.add_url_rule(path, path.replace('/', '_'), functools.partial(_main_page, sections))
-
-    for key, val in tree.get("subpages", {}):
-        traverse(api, utils.join_url(path, key), val)
-
-def scene(name, command=None, **kwargs):
-    scene = getattr(scenes, name)
-    if command == "enter":
-        scene.enter()
-    elif command == "exit":
-        scene.exit()
-    elif command is not None:
-        raise NameError("Command '{}' does not exist on scene {}".format(
-            command, scene))
-    return scene.active
-
-def _main_page(sections, *_, **__):
+def _main_page(*_, **__):
     args = dict(template_args)
     return Response(env.get_template('main.html').render(**args), mimetype='text/html')
 
