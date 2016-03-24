@@ -41,16 +41,6 @@
                        ng-disabled="item.disabled"
                        ng-model="item.state"
                        />
-                <input ng-switch-when="Toggle"
-                       ng-repeat="command in item.commands"
-                       id="item_{{item.id}}_command_{{command}}"
-                       type="button"
-                       class="command btn waves-light"
-                       value="{{command}}"
-                       ng-disabled="item.disabled()"
-                       ng-click="item.send_command(command)"
-                       style="margin: 0px 2px;"
-                       />
                 <div ng-switch-when="Number">
                   <input type="number"
                          id="item_{{item.id}}_number"
@@ -74,7 +64,17 @@
                     Enter
                   </label>
                 </div>
-                <span ng-switch-default>&nbsp;</span>
+                <input ng-switch-default
+                       ng-if="item.commands"
+                       ng-repeat="command in item.commands.sort()"
+                       id="item_{{item.id}}_command_{{command}}"
+                       type="button"
+                       class="command btn waves-light"
+                       value="{{command}}"
+                       ng-disabled="item.disabled()"
+                       ng-click="item.send_command(command)"
+                       style="margin: 0px 2px;"
+                       />
               </div>
               <div class="col s6 m1">
                 <div ng-if="item.show_disable()">
