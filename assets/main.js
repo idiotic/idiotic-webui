@@ -61,7 +61,13 @@ app.factory("Api", ["$http", "Item", "Scene", function($http, Item, Scene) {
 app.factory("Item", ["$http", function($http) {
     function Item(api, itemData) {
         var item = new Object();
-        angular.extend(item, itemData);
+        item.type = itemData.type;
+        item.id = itemData.id;
+        item.name = itemData.name;
+        item.state = itemData.state;
+        item.tags = itemData.tags;
+        item.commands = itemData.commands;
+        item.enabled = itemData.enabled;
         item.api = api;
 
         item.send_state = function() {
