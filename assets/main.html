@@ -67,10 +67,10 @@
                 <input ng-switch-default
                        ng-if="item.commands"
                        ng-repeat="command in item.commands.sort()"
-                       id="item_{{item.id}}_command_{{command}}"
+                       id="item_{{item.id}}_command_{{command.name}}"
                        type="button"
                        class="command btn waves-light"
-                       value="{{command}}"
+                       value="{{command.name}}"
                        ng-disabled="item.disabled()"
                        ng-click="item.send_command(command)"
                        style="margin: 0px 2px;"

@@ -66,9 +66,16 @@ app.factory("Item", ["$http", function($http) {
         item.name = itemData.name;
         item.state = itemData.state;
         item.tags = itemData.tags;
-        item.commands = itemData.commands;
         item.enabled = itemData.enabled;
         item.api = api;
+
+        // Construct commands from dictionary returned by API
+        item.commands = [];
+        for (name in itemData.commands) {
+            command = itemData.commands[name];
+            command['name'] = name;
+            item.commands.push(command);
+        }
 
         item.send_state = function() {
             if(item.state === undefined) {
@@ -79,7 +86,7 @@ app.factory("Item", ["$http", function($http) {
         }
 
         item.send_command = function(command) {
-            return api.get("item/" + item.id + "/command/" + command)
+            return api.get("item/" + item.id + "/command/" + command.name)
                 .then(function(result) {
                     // Update our models.
                     angular.extend(item, result.item);
