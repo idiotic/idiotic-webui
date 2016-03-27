@@ -43,13 +43,17 @@ app.factory("Api", ["$http", "Item", "Scene", function($http, Item, Scene) {
                             api.items.push(Item(api, item_json));
                         });
                     }).then(function() {
-                    api.get('scenes').then(function(scenes_json) {
-                        api.scenes = [];
-                        angular.forEach(scenes_json, function(scene_json) {
-                            api.scenes.push(Scene(api, scene_json));
+                        return api.get('scenes').then(function(scenes_json) {
+                            api.scenes = [];
+                            angular.forEach(scenes_json, function(scene_json) {
+                                api.scenes.push(Scene(api, scene_json));
+                            });
+                        })
+                    }).then(function() {
+                        return api.get('version').then(function(version) {
+                            api.version = version.VERSION;
                         });
-                    })
-            }).then(api.refresh_callback);
+                    }).then(api.refresh_callback);
         };
 
         api.refresh();
@@ -156,10 +160,15 @@ app.controller("idioticController", ["$scope", "$http", "Api", function($scope, 
     idiotic.refresh = function() {
         // Run all refresh functions, and broadcast when complete.
         Promise.all([
+                idiotic.refresh_version(),
                 idiotic.refresh_sections()
         ]).then(function() {
                 $scope.$broadcast('idioticLoaded');
             });
+    }
+    idiotic.refresh_version = function() {
+        console.log('loaded', idiotic.api.version);
+        idiotic.conf.version = idiotic.api.version;
     }
     idiotic.refresh_sections = function () {
         var sections = [];
