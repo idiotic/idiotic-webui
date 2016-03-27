@@ -6,12 +6,8 @@ import jinja2
 import json
 import logging
 import datetime
-import requests
-import functools
 from flask import Response, request
-from idiotic import event, utils
-from idiotic.item import Toggle, Trigger, Number, Motor, Text
-from idiotic.scene import Scene
+from idiotic import utils
 
 MODULE_NAME = "webui"
 
