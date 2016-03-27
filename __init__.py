@@ -9,6 +9,8 @@ import datetime
 from flask import Response, request
 from idiotic import utils
 
+from .version import VERSION
+
 MODULE_NAME = "webui"
 
 LOG = logging.getLogger("module.webui")
@@ -49,7 +51,8 @@ def configure(config, api, assets):
 
     api.add_url_rule('/', '_main_page', _main_page)
     api.add_url_rule('/main.js', '_main_js', _main_js)
-    api.add_url_rule('/webui_conf.json', '__webui_conf', _webui_conf(config))
+    api.add_url_rule('/webui/version', 'webui_version', _webui_version)
+    api.add_url_rule('/webui/conf.json', '_webui_conf', _webui_conf(config))
     api.add_url_rule('/sparkline/<item>.svg', '_sparkline', _sparkline)
     api.add_url_rule('/graph/<item>.svg', '_graph', _graph)
 
@@ -61,6 +64,10 @@ def _main_page(*_, **__):
 
 def _main_js(*_, **__):
     return Response(env.get_template('main.js').render(), mimetype='text/javascript')
+
+@utils.jsonified
+def _webui_version():
+    return VERSION
 
 def _webui_conf(config):
     def __webui_conf(*_, **__):

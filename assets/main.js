@@ -213,7 +213,7 @@ app.controller("idioticController", ["$scope", "$http", "Api", function($scope, 
         idiotic.sections = sections;
     }
 
-    $http.get("/webui_conf.json").then(function(resp) {
+    $http.get("/webui/conf.json").then(function(resp) {
         console.log('WebUI configuration loaded');
         idiotic.conf = resp.data;
 
