@@ -61,21 +61,24 @@ app.factory("Api", ["$http", "Item", "Scene", function($http, Item, Scene) {
 app.factory("Item", ["$http", function($http) {
     function Item(api, itemData) {
         var item = new Object();
-        item.type = itemData.type;
-        item.id = itemData.id;
-        item.name = itemData.name;
-        item.state = itemData.state;
-        item.tags = itemData.tags;
-        item.enabled = itemData.enabled;
         item.api = api;
 
-        // Construct commands from dictionary returned by API
-        item.commands = [];
-        for (name in itemData.commands) {
-            command = itemData.commands[name];
-            command['name'] = name;
-            item.commands.push(command);
-        }
+        item.refresh = function(data) {
+            item.type = data.type;
+            item.id = data.id;
+            item.name = data.name;
+            item.state = data.state;
+            item.tags = data.tags;
+            item.enabled = data.enabled;
+
+            // Construct commands from dictionary returned by API
+            item.commands = [];
+            for (name in data.commands) {
+                command = data.commands[name];
+                command['name'] = name;
+                item.commands.push(command);
+            }
+        };
 
         item.send_state = function() {
             if(item.state === undefined) {
@@ -89,7 +92,7 @@ app.factory("Item", ["$http", function($http) {
             return api.get("item/" + item.id + "/command/" + command.name)
                 .then(function(result) {
                     // Update our models.
-                    angular.extend(item, result.item);
+                    item.refresh(result.item);
                 });
         }
 
@@ -115,6 +118,7 @@ app.factory("Item", ["$http", function($http) {
           }
         }
 
+        item.refresh(itemData);
         return item;
     };
 
