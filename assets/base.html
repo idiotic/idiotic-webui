@@ -16,7 +16,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
     <script type="text/javascript" src="{{ root }}main.js"></script>
   </head>
-  <body ng-app="idiotic">
+  <body ng-app="idiotic" ng-controller="idioticController as idiotic">
     <header>
       <nav class="top-nav pink lighten-1">
         <div class="container">
@@ -33,8 +33,36 @@
     {% block main %}
     {% endblock main %}
     </main>
-    <footer>
-      {% block footer %}{% endblock %}
+    <footer class="page-footer pink lighten-3">
+      {% block footer %}
+      {% raw %}
+      <div class="container">
+        <div class="row">
+          <div class="col s12 l8">
+            &nbsp;
+          </div>
+          <div class="col s12 l4">
+            <div class="row">
+              <div class="col s8">
+                Idiotic Version
+              </div>
+               <div class="col s4">
+                 {{idiotic.version}}
+               </div>
+            </div>
+            <div class="row">
+              <div class="col s8">
+                Idiotic-WebUI Version
+              </div>
+               <div class="col s4">
+                 {{idiotic.conf.webui_version}}
+               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endraw %}
+      {% endblock %}
     </footer>
 
     {% block scripts %}

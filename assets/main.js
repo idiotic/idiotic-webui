@@ -215,7 +215,7 @@ app.controller("idioticController", ["$scope", "$http", "Api", function($scope, 
 
     $http.get("/webui/conf.json").then(function(resp) {
         console.log('WebUI configuration loaded');
-        idiotic.conf = resp.data;
+        idiotic.conf = resp.data.result;
 
         idiotic.api = Api(idiotic.conf.api_base, idiotic.refresh);
         idiotic.items = function() { return idiotic.api.items; };

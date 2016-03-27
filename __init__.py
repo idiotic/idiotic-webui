@@ -70,8 +70,10 @@ def _webui_version():
     return VERSION
 
 def _webui_conf(config):
-    def __webui_conf(*_, **__):
-        return Response(json.dumps(config), mimetype='application/json')
+    config['webui_version'] = VERSION
+    @utils.jsonified
+    def __webui_conf():
+        return config
     return __webui_conf
 
 def __empty_svg():
