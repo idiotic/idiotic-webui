@@ -48,6 +48,8 @@
                          ng-required="true"
                          ng-disabled="item.disabled()"
                          ng-model="item.state"
+                         ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500,
+                         'blur': 0 } }"
                          ng-change="item.send_state()"
                          />
                 </div>
