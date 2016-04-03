@@ -51,6 +51,7 @@ def configure(config, api, assets):
 
     api.add_url_rule('/', '_main_page', _main_page)
     api.add_url_rule('/main.js', '_main_js', _main_js)
+    api.add_url_rule('/main.css', '_main_css', _main_css)
     api.add_url_rule('/webui/version', 'webui_version', _webui_version)
     api.add_url_rule('/webui/conf.json', '_webui_conf', _webui_conf(config))
     api.add_url_rule('/sparkline/<item>.svg', '_sparkline', _sparkline)
@@ -64,6 +65,9 @@ def _main_page(*_, **__):
 
 def _main_js(*_, **__):
     return Response(env.get_template('main.js').render(), mimetype='text/javascript')
+
+def _main_css(*_, **__):
+    return Response(env.get_template('main.css').render(), mimetype='text/css')
 
 @utils.jsonified
 def _webui_version():
