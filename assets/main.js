@@ -154,7 +154,10 @@ app.factory("Scene", ["$http", function($http) {
             scene.state = !scene.state;
         };
 
-        scene.default_action = scene.toggle_activity;
+        scene.default_action = function() {
+            scene.toggle_activity();
+            scene.send_activity();
+        };
 
         return scene;
     };
