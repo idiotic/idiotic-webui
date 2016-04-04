@@ -13,7 +13,7 @@
         <div ng-repeat="item in section.items() track by item.id"
              class="col s12 m6 l4" style="padding: 0px 5px;">
           <div id="item_{{item.id}}"
-               class="item card lighten-5"
+               class="item card waves-effect waves-block lighten-5"
                ng-class="{green: item.state}"
                ng-click="item.default_action()">
             <div class="card-content">
