@@ -84,6 +84,8 @@ app.factory("Item", ["$http", function($http) {
             }
         };
 
+        item.default_action = function() {};
+
         item.send_state = function() {
             if(item.state === undefined) {
                 console.log("Item", item.id, "refusing to send undefined state");
@@ -142,6 +144,12 @@ app.factory("Scene", ["$http", function($http) {
             var enterexit = scene.state ? "enter" : "exit";
             return api.get("scene/" + scene.id + "/command/" + enterexit);
         };
+
+        scene.toggle_activity = function() {
+            scene.state = !scene.state;
+        };
+
+        scene.default_action = scene.toggle_activity;
 
         return scene;
     };
