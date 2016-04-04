@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 # Only change the following elements by hand.
 # VERSION is constructed from these.
@@ -10,7 +11,7 @@ PATCH = 0
 def scm_version(silent = False):
     try:
         return subprocess.check_output(
-                ['git', 'describe', '--tags', '--dirty=+'],
+                ['git', '-C', os.path.dirname(__file__), 'describe', '--tags', '--dirty=+'],
                 stderr = subprocess.DEVNULL
             ).decode('UTF-8').strip()
     except subprocess.CalledProcessError as e:
