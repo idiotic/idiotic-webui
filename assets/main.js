@@ -76,11 +76,16 @@ app.factory("Item", ["$http", function($http) {
             item.enabled = data.enabled;
 
             // Construct commands from dictionary returned by API
+            item.buttons = [];
             item.commands = [];
             for (name in data.commands) {
                 command = data.commands[name];
                 command['name'] = name;
-                item.commands.push(command);
+                if (command.arguments.length > 0) {
+                    item.commands.push(command);
+                } else {
+                    item.buttons.push(command);
+                }
             }
         };
 
