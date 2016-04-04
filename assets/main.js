@@ -11,8 +11,10 @@ app.factory("Api", ["$http", "Item", "Scene", function($http, Item, Scene) {
 
         api.items = [];
 
-        api.get = function(endpoint) {
-            return $http.get(encodeURI(api.api_url + endpoint)).then(function(resp) {
+        api.get = function(endpoint, params) {
+            return $http.get(encodeURI(api.api_url + endpoint), {
+                params: params
+            }).then(function(resp) {
                 if(resp.data.status == "success") {
                     console.log('GET', api.api_url + endpoint + ' successful');
                     return resp.data.result;
@@ -81,7 +83,8 @@ app.factory("Item", ["$http", function($http) {
             for (name in data.commands) {
                 command = data.commands[name];
                 command['name'] = name;
-                if (command.arguments.length > 0) {
+                console.log(command);
+                if (Object.keys(command.arguments).length > 0) {
                     item.commands.push(command);
                 } else {
                     item.buttons.push(command);
@@ -99,8 +102,8 @@ app.factory("Item", ["$http", function($http) {
             return item.send_command("set?val=" + item.state);
         }
 
-        item.send_command = function(command) {
-            return api.get("item/" + item.id + "/command/" + command.name)
+        item.send_command = function(command, params) {
+            return api.get("item/" + item.id + "/command/" + command.name, params)
                 .then(function(result) {
                     // Update our models.
                     item.refresh(result.item);
