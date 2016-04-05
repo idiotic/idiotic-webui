@@ -110,6 +110,8 @@ def __group(times, values, count=50, group=lambda v: sum(v)/len(v)):
     if len(times) != len(values):
         raise ValueError("times and values must have same length")
 
+    values = [float(x) for x in values]
+
     if len(times) < count or len(times) < 2:
         return times, values
 
