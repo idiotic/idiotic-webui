@@ -71,16 +71,18 @@
                 </div>
               </div>
             </div>
-            <div class="card-action" ng-if="item.buttons.length > 0">
-              <a ng-repeat="button in item.buttons"
-                 id="item_{{item.id}}_command_{{button.name}}"
-                 type="button"
-                 class="command btn-flat waves-effect waves-pink"
-                 ng-disabled="item.disabled()"
-                 ng-click="item.send_command(button)"
-                 style="margin: 0px 2px;">
-                {{button.name}}
-              </a>
+            <div class="card-action"
+                 ng-if="item.buttons.length > 0">
+              <div class="row" style="margin-bottom: 0;">
+                <a ng-repeat="button in item.buttons"
+                   id="item_{{item.id}}_command_{{button.name}}"
+                   class="center-align col s4"
+                   ng-disabled="item.disabled()"
+                   ng-click="item.send_command(button)"
+                   style="margin: 0;">
+                  {{button.name}}
+                </a>
+              </div>
             </div>
           </div>
         </div>
