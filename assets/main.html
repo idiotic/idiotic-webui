@@ -20,10 +20,11 @@
               <div class="card-title">
                 {{item.name}}
               </div>
-              <div class="">
-                <a class="graph_link" href="graph/{{item.id}}.svg"
-                                      ng-if="item.enable_graph()">
-                  <i class="material-icons hoverable black-text">insert_chart</i>
+              <div ng-if="item.enable_graph()">
+                <a href="graph/{{item.id}}.svg">
+                  <img src="graph/{{item.id}}.svg"
+                       class="responsive-img"
+                       >
                 </a>
               </div>
               <div class="" ng-switch="item.type">
