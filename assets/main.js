@@ -78,6 +78,7 @@ app.factory("Item", ["$http", function($http) {
             // Construct commands from dictionary returned by API
             item.buttons = [];
             item.commands = [];
+            item.default_commands = [];
             for (name in data.commands) {
                 command = data.commands[name];
                 command['name'] = name;
@@ -86,10 +87,22 @@ app.factory("Item", ["$http", function($http) {
                 } else {
                     item.buttons.push(command);
                 }
+
+                if (command.default) {
+                    item.default_commands.push(command);
+                }
             }
         };
 
-        item.default_action = function() {};
+        item.default_action = function() {
+            var send_functions = [];
+            for (var index in item.default_commands) {
+                var command = item.default_commands[index];
+                send_functions.push(item.send_command(command));
+            }
+            return Promise.all(send_functions);
+
+        };
 
         item.send_state = function() {
             if(item.state === undefined) {
