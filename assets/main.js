@@ -66,7 +66,7 @@ app.factory("Api", ["$interval", "$http", "Item", "Scene",
 
         api.cancel_refresh = function() {
             console.log('Cancelling scheduled API refreshes');
-            api.refresher.cancel();
+            $interval.cancel(api.refresher);
             api.refresher = undefined;
         };
 
@@ -192,7 +192,8 @@ app.factory("Scene", ["$http", function($http) {
     return Scene;
 }]);
 
-app.controller("idioticController", ["$scope", "$http", "Api", function($scope, $http, Api) {
+app.controller("idioticController", ["$scope", "$http", "Api", "visibilityService",
+        function($scope, $http, Api, visibilityService) {
     var idiotic = this;
 
     // Give empty array until API is loaded.
@@ -277,6 +278,14 @@ app.controller("idioticController", ["$scope", "$http", "Api", function($scope, 
     $scope.slug = function(s) {
         return s.toLowerCase().replace(/ /g, '_');
     };
+
+    $scope.$on("visibilityChanged", function(event, hidden) {
+        if (hidden) {
+            idiotic.api.cancel_refresh();
+        } else {
+            idiotic.api.refresh();
+        }
+    });
 }]);
 
 app.directive('scrollspy', ['$timeout', function($timeout) {
@@ -287,4 +296,19 @@ app.directive('scrollspy', ['$timeout', function($timeout) {
             }, 0);
         }
     };
+}]);
+
+app.service('visibilityService', ["$rootScope", "$document",
+        function ($rootScope, $document) {
+    function visibilitychanged() {
+        $rootScope.$broadcast('visibilityChanged',
+                $document[0].hidden ||
+                $document[0].webkitHidden ||
+                $document[0].mozHidden ||
+                $document[0].msHidden);
+    }
+
+    $document[0].addEventListener("visibilitychange",       visibilitychanged);
+    $document[0].addEventListener("webkitvisibilitychange", visibilitychanged);
+    $document[0].addEventListener("msvisibilitychange",     visibilitychanged);
 }]);
