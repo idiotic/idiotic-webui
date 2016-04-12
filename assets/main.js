@@ -1,8 +1,10 @@
 var app = angular.module("idiotic", []);
-app.factory("Api", ["$http", "Item", "Scene", function($http, Item, Scene) {
-    function Api(api_root, refresh_callback) {
+app.factory("Api", ["$interval", "$http", "Item", "Scene",
+        function($interval, $http, Item, Scene) {
+    function Api(api_root, refresh_callback, refresh_interval) {
         var api = new Object();
         api.api_url = api_root + 'api/';
+        api.refresh_interval = refresh_interval !== undefined ? refresh_interval : 15000;
         if(refresh_callback) {
             api.refresh_callback = refresh_callback;
         } else {
@@ -36,6 +38,12 @@ app.factory("Api", ["$http", "Item", "Scene", function($http, Item, Scene) {
 
         api.refresh = function() {
             console.log('Refreshing API from', api.api_url);
+
+            if (api.refresher === undefined) {
+                // Refresh regularly hereafter, until stopped.
+                api.refresher = $interval(api.refresh, api.refresh_interval);
+            }
+
             // TODO: Parallelize
             return api.get('items').then(function(items_json) {
                         api.items = [];
@@ -54,6 +62,12 @@ app.factory("Api", ["$http", "Item", "Scene", function($http, Item, Scene) {
                             api.version = version.VERSION;
                         });
                     }).then(api.refresh_callback);
+        };
+
+        api.cancel_refresh = function() {
+            console.log('Cancelling scheduled API refreshes');
+            api.refresher.cancel();
+            api.refresher = undefined;
         };
 
         api.refresh();
