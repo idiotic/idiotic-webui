@@ -4,7 +4,7 @@ import os
 # Only change the following elements by hand.
 # VERSION is constructed from these.
 MAJOR = 0
-MINOR = 2
+MINOR = 3
 PATCH = 0
 # Do not bump or change elements below.
 
