@@ -5,7 +5,7 @@ import os
 # VERSION is constructed from these.
 MAJOR = 0
 MINOR = 3
-PATCH = 0
+PATCH = 1
 # Do not bump or change elements below.
 
 def scm_version(silent = False):
