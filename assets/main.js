@@ -1,4 +1,18 @@
 var app = angular.module("idiotic", []);
+
+function compareNames(a, b) {
+    var name_a = a.name.toUpperCase();
+    var name_b = b.name.toUpperCase();
+
+    if (name_a < name_b) {
+        return -1;
+    } else if (name_a > name_b) {
+        return 1;
+    }
+
+    return 0;
+}
+
 app.factory("Api", ["$interval", "$http", "Item", "Scene",
         function($interval, $http, Item, Scene) {
     function Api(api_root, refresh_callback, refresh_interval) {
@@ -47,11 +61,13 @@ app.factory("Api", ["$interval", "$http", "Item", "Scene",
             // TODO: Parallelize
             return api.get('items').then(function(items_json) {
                         api.items = [];
+                        items_json.sort(compareNames);
                         angular.forEach(items_json, function(item_json) {
                             api.items.push(Item(api, item_json));
                         });
                     }).then(function() {
                         return api.get('scenes').then(function(scenes_json) {
+                            scenes_json.sort(compareNames);
                             api.scenes = [];
                             angular.forEach(scenes_json, function(scene_json) {
                                 api.scenes.push(Scene(api, scene_json));
