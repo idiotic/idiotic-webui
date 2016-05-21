@@ -21,7 +21,20 @@
   </head>
   <body ng-app="idiotic" ng-controller="idioticController as idiotic">
     <header>
-      <div class="navbar-fixed">
+      <div class="navbar-fixed hide-on-med-and-down">
+        <nav class="top-nav pink lighten-1">
+          <div class="container">
+            <div class="nav-wrapper">
+              <a href="#" class="brand-logo">{{ title }}</a>
+              <ul id="nav-mobile" class="right hide-on-med-and-down">
+                {% if url != base %}<li><a href="../">Up</a></li>{% endif %}
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <!-- Duplicate navbar which is not fixed. TODO: do something else -->
+      <div class="navbar hide-on-large-only">
         <nav class="top-nav pink lighten-1">
           <div class="container">
             <div class="nav-wrapper">
