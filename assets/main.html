@@ -109,7 +109,7 @@
 {% block scripts %}
 <script>
 $(function() {
-  $("#toc").pushpin({top: $("#page-top").offset().top });
+  $("#toc").pushpin({offset: $("#page-top").offset().top });
 });
 </script>
 {% endblock %}
