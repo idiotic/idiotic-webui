@@ -105,6 +105,15 @@ app.factory("Item", ["$http", function($http) {
             item.tags = data.tags;
             item.enabled = data.enabled;
 
+            // If the state is a string, try to translate it to a boolean.
+            if (typeof(data.state) == "string") {
+                if (["on", "set"].indexOf(data.state.toLowerCase) >= 0) {
+                    item.state = true;
+                } else if (["off"].indexOf(data.state.toLowerCase) >= 0) {
+                    item.state = false;
+                }
+            }
+
             // Construct commands from dictionary returned by API
             item.buttons = [];
             item.commands = [];
@@ -123,6 +132,10 @@ app.factory("Item", ["$http", function($http) {
                 }
             }
         };
+
+        item.is_active = function() {
+            return (typeof(item.state) == "boolean") && item.state;
+        }
 
         item.default_action = function() {
             var send_functions = [];
@@ -195,6 +208,10 @@ app.factory("Scene", ["$http", function($http) {
 
         scene.id = scene.name.toLowerCase().replace(/ /g, '_');
         scene.state = scene.active;
+
+        scene.is_active = function() {
+            return scene.state;
+        }
 
         scene.send_activity = function() {
             var enterexit = scene.state ? "enter" : "exit";
