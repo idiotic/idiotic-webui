@@ -154,6 +154,14 @@ app.factory("Item", ["$http", function($http) {
             return item.tags.indexOf("webui.show_sparkline") >= 0;
         }
 
+        item.readonly = function() {
+            return item.tags.indexOf("webui.readonly") >= 0;
+        }
+
+        item.show_actions = function() {
+            return (!item.readonly()) && item.buttons.length > 0;
+        }
+
         item.disabled = function(disabled) {
             if(disabled === undefined) {
                 return !item.enabled;

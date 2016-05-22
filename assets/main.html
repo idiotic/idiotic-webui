@@ -39,6 +39,7 @@
                   <input type="number"
                          id="item_{{item.id}}_number"
                          class="command"
+                         ng-if="!item.readonly"
                          ng-required="true"
                          ng-disabled="item.disabled()"
                          ng-model="item.state"
@@ -46,6 +47,9 @@
                          'blur': 0 } }"
                          ng-change="item.send_state()"
                          />
+                  <div class="center" ng-if="item.readonly">
+                    <b>{{item.state}}</b>
+                  </div>
                 </div>
                 <div ng-switch-when="Scene" class="switch">
                   <label>
@@ -73,7 +77,7 @@
               </div>
             </div>
             <div class="card-action"
-                 ng-if="item.buttons.length > 0">
+                 ng-if="item.show_actions()">
               <div class="row" style="margin-bottom: 0;">
                 <a ng-repeat="button in item.buttons"
                    id="item_{{item.id}}_command_{{button.name}}"
