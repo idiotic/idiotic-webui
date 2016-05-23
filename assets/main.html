@@ -40,6 +40,19 @@
               </div>
             </div>
             <div class="collapsible-body">
+              <div ng-if="item.show_actions()">
+                <div class="row" style="margin-bottom: 0;">
+                  <a ng-repeat="button in item.buttons"
+                     class="center-align btn-flat col s6 l4"
+                     ng-disabled="item.disabled()"
+                     ng-click="item.send_command(button)"
+                     style="padding: 0 5px 0 5px;">
+                    {{button.name}}
+                  </a>
+                </div>
+                <div class="divider"></div>
+              </div>
+
               <div ng-if="item.enable_graph()">
                 <a href="graph/{{item.id}}.svg">
                   <img ng-src="graph/{{item.id}}.svg"
@@ -92,19 +105,6 @@
                          ng-change="item.send_disable()"
                          />
                   <label for="disable_{{item.id}}">Disable</label>
-                </div>
-              </div>
-              <div class="card-action"
-                   ng-if="item.show_actions()">
-                <div class="row" style="margin-bottom: 0;">
-                  <a ng-repeat="button in item.buttons"
-                     id="item_{{item.id}}_command_{{button.name}}"
-                     class="center-align col s4"
-                     ng-disabled="item.disabled()"
-                     ng-click="item.send_command(button)"
-                     style="margin: 0;">
-                    {{button.name}}
-                  </a>
                 </div>
               </div>
             </div>
