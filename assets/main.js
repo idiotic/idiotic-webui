@@ -145,8 +145,11 @@ app.factory("Item", ["$http", function($http) {
                 send_functions.push(item.send_command(command));
             }
             return Promise.all(send_functions);
-
         };
+
+        item.has_default = function() {
+            return (item.default_commands.length > 0);
+        }
 
         item.send_state = function() {
             if(item.state === undefined) {
@@ -233,6 +236,10 @@ app.factory("Scene", ["$http", function($http) {
             scene.toggle_activity();
             scene.send_activity();
         };
+
+        scene.has_default = function() {
+            return true;
+        }
 
         return scene;
     };
