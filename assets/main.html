@@ -22,12 +22,13 @@
               <i class="material-icons col s1">
                 {{item.is_active() ? "label" : "label_outline"}}
               </i>
-              <div class="col s9 l5 truncate">
-                {{item.name}}
-              </div>
-              <div class="col l4 truncate hide-on-med-and-down">
-                <b class="right">
-                  {{item.show_display() ? item.display : "&nbsp"}}
+              <div class="col s9">
+                <div class="left truncate">
+                  {{item.name}}
+                </div>
+                <b class="right truncate hide-on-small-only"
+                   ng-if="item.show_display()">
+                  {{item.display}}
                 </b>
               </div>
               <div class="col s1"
