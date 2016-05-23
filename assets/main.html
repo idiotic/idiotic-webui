@@ -79,7 +79,7 @@
             <div class="card-action"
                  ng-if="item.show_actions()">
               <div class="row" style="margin-bottom: 0;">
-                <a ng-repeat="button in item.buttons"
+                <a ng-repeat="button in item.front_buttons()"
                    id="item_{{item.id}}_command_{{button.name}}"
                    class="center-align col s4"
                    ng-disabled="item.disabled()"
@@ -87,6 +87,26 @@
                    style="margin: 0;">
                   {{button.name}}
                 </a>
+                <a class="dropdown-button center-align col s4"
+                   href="#"
+                   data-activates="item_{{item.id}}_back_buttons"
+                   ng-if="item.back_buttons().length > 0"
+                   dropdown>
+                  <i class="material-icons">more_horiz</i>
+                </a>
+                <ul id="item_{{item.id}}_back_buttons"
+                    style="position: fixed"
+                    class="dropdown-content"
+                    ng-if="item.back_buttons().length > 0">
+                  <li ng-repeat="button in item.back_buttons()">
+                    <a id="item_{{item.id}}_command_{{button.name}}"
+                       class="center-align"
+                       ng-disabled="item.disabled()"
+                       ng-click="item.send_command(button)"
+                       style="margin: 0;">
+                      {{button.name}}
+                    </a>
+                  </li>
               </div>
             </div>
           </div>

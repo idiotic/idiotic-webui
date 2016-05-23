@@ -147,6 +147,28 @@ app.factory("Item", ["$http", function($http) {
 
         };
 
+        // Return a list of up to the first three buttons. If there are more
+        // than 3, it returns only the first two.
+        item.front_buttons = function() {
+            if(item.buttons.length > 3) {
+                return item.buttons.slice(0, 2);
+            } else {
+                return item.buttons;
+            }
+        }
+
+        // Return a list of all buttons except the first two or three. It is
+        // guaranteed that
+        //   item.front_buttons() + item.back_buttons() = item.buttons
+        item.back_buttons = function() {
+            if(item.buttons.length <= 3) {
+                return [];
+            } else {
+                console.log(item.buttons, item.buttons.slice(2));
+                return item.buttons.slice(2);
+            }
+        }
+
         item.send_state = function() {
             if(item.state === undefined) {
                 console.log("Item", item.id, "refusing to send undefined state");
@@ -334,6 +356,16 @@ app.directive('scrollspy', ['$timeout', function($timeout) {
         link: function($scope, element, attrs) {
             $timeout(function() {
                 $(element).scrollSpy();
+            }, 0);
+        }
+    };
+}]);
+
+app.directive('dropdown', ['$timeout', function($timeout) {
+    return {
+        link: function($scope, element, attrs) {
+            $timeout(function() {
+                $(element).dropdown();
             }, 0);
         }
     };
