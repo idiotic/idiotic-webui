@@ -122,7 +122,7 @@ app.factory("Item", ["$http", function($http) {
             for (name in data.commands) {
                 command = data.commands[name];
                 command['name'] = name;
-                if (command.arguments.length > 0) {
+                if (Object.keys(command.arguments).length > 0) {
                     item.commands.push(command);
                 } else {
                     item.buttons.push(command);
