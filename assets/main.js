@@ -178,7 +178,6 @@ app.factory("Item", ["$http", function($http) {
 
         // Determine whether to display the state.
         item.show_display = function() {
-            console.log(item.name, typeof(item.state));
             // TODO: move display logic into idiotic core
             return (typeof(item.state) == "number");
         }
