@@ -178,8 +178,8 @@ app.factory("Item", ["$http", function($http) {
 
         // Determine whether to display the state.
         item.show_display = function() {
-            // TODO: move display logic into idiotic core
-            return (typeof(item.state) == "number");
+            // Display as long as it is not null or undefined.
+            return (item.display != undefined)
         }
 
         item.disabled = function(disabled) {
