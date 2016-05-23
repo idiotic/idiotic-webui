@@ -6,20 +6,40 @@
 
 <div class="container">
   <div id="page-top" class="row">
-    <div class="col m12 l10">
+    <div class="col s12 l10">
       <div ng-repeat="section in idiotic.sections"
            class="row">
-        <h2 id="{{slug(section.title)}}" scrollspy>{{section.title}}</h2>
-        <div ng-repeat="item in section.items() track by item.id"
-             class="col s12 m6 l4" style="padding: 0px 5px;">
-          <div id="item_{{item.id}}"
-               class="item card waves-effect waves-block lighten-5"
-               ng-class="{green: item.is_active()}">
-            <div class="card-content"
-                 ng-click="item.default_action()">
-              <div class="card-title">
+        <h2 id="{{slug(section.title)}}"
+            class="s12"
+            scrollspy>
+          {{section.title}}
+        </h2>
+        <ul class="collapsible popout" data-collapsible="expandable" collapsible>
+          <li ng-repeat="item in section.items() track by item.id">
+            <div class="item collapsible-header row lighten-5"
+                 ng-class="{cyan: item.is_active()}"
+                 style="margin-bottom: 0;">
+              <i class="material-icons col s1">
+                {{item.is_active() ? "label" : "label_outline"}}
+              </i>
+              <div class="col truncate s9 l5">
                 {{item.name}}
               </div>
+              <div class="col hide-on-med-and-down l4">
+                &nbsp;
+              </div>
+              <div class="col s1"
+                   ng-click="item.default_action(); $event.stopPropagation();">
+                <i class="material-icons tooltipped"
+                   data-position="bottom"
+                   data-delay="300"
+                   data-tooltip="Trigger default action"
+                   tooltipped>
+                  send
+                </i>
+              </div>
+            </div>
+            <div class="collapsible-body">
               <div ng-if="item.enable_graph()">
                 <a href="graph/{{item.id}}.svg">
                   <img ng-src="graph/{{item.id}}.svg"
@@ -31,14 +51,13 @@
                 <input ng-switch-when="Text"
                        id="item_{{item.id}}_text"
                        type="text"
-                       class="command"
+                       class="right"
                        ng-disabled="item.disabled"
                        ng-model="item.state"
                        />
                 <div ng-switch-when="Number">
                   <input type="number"
-                         id="item_{{item.id}}_number"
-                         class="command"
+                         class="right"
                          ng-if="!item.readonly"
                          ng-required="true"
                          ng-disabled="item.disabled()"
@@ -47,11 +66,11 @@
                          'blur': 0 } }"
                          ng-change="item.send_state()"
                          />
-                  <div class="center" ng-if="item.readonly">
+                  <div class="right" ng-if="item.readonly">
                     <b>{{item.state}}</b>
                   </div>
                 </div>
-                <div ng-switch-when="Scene" class="switch">
+                <div ng-switch-when="Scene" class="switch right">
                   <label>
                     Exit
                     <input type="checkbox"
@@ -75,22 +94,22 @@
                   <label for="disable_{{item.id}}">Disable</label>
                 </div>
               </div>
-            </div>
-            <div class="card-action"
-                 ng-if="item.show_actions()">
-              <div class="row" style="margin-bottom: 0;">
-                <a ng-repeat="button in item.buttons"
-                   id="item_{{item.id}}_command_{{button.name}}"
-                   class="center-align col s4"
-                   ng-disabled="item.disabled()"
-                   ng-click="item.send_command(button)"
-                   style="margin: 0;">
-                  {{button.name}}
-                </a>
+              <div class="card-action"
+                   ng-if="item.show_actions()">
+                <div class="row" style="margin-bottom: 0;">
+                  <a ng-repeat="button in item.buttons"
+                     id="item_{{item.id}}_command_{{button.name}}"
+                     class="center-align col s4"
+                     ng-disabled="item.disabled()"
+                     ng-click="item.send_command(button)"
+                     style="margin: 0;">
+                    {{button.name}}
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </li>
+        </ul>
       </div>
     </div>
 

@@ -329,6 +329,26 @@ app.controller("idioticController", ["$scope", "$http", "Api", "visibilityServic
     });
 }]);
 
+app.directive('collapsible', ['$timeout', function($timeout) {
+    return {
+        link: function($scope, element, attrs) {
+            $timeout(function() {
+                $(element).collapsible();
+            }, 0);
+        }
+    };
+}]);
+
+app.directive('tooltipped', ['$timeout', function($timeout) {
+    return {
+        link: function($scope, element, attrs) {
+            $timeout(function() {
+                $(element).tooltip();
+            }, 0);
+        }
+    };
+}]);
+
 app.directive('scrollspy', ['$timeout', function($timeout) {
     return {
         link: function($scope, element, attrs) {
