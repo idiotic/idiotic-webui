@@ -22,11 +22,13 @@
               <i class="material-icons col s1">
                 {{item.is_active() ? "label" : "label_outline"}}
               </i>
-              <div class="col truncate s9 l5">
+              <div class="col s9 l5 truncate">
                 {{item.name}}
               </div>
-              <div class="col hide-on-med-and-down l4">
-                &nbsp;
+              <div class="col l4 truncate hide-on-med-and-down">
+                <b class="right">
+                  {{item.show_display() ? item.display : "&nbsp"}}
+                </b>
               </div>
               <div class="col s1"
                    ng-click="item.default_action(); $event.stopPropagation();">
@@ -79,9 +81,6 @@
                          'blur': 0 } }"
                          ng-change="item.send_state()"
                          />
-                  <div class="right" ng-if="item.readonly">
-                    <b>{{item.state}}</b>
-                  </div>
                 </div>
                 <div ng-switch-when="Scene" class="switch right">
                   <label>

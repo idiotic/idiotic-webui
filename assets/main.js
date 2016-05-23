@@ -102,6 +102,7 @@ app.factory("Item", ["$http", function($http) {
             item.id = data.id;
             item.name = data.name;
             item.state = data.state;
+            item.display = data.display;
             item.tags = data.tags;
             item.enabled = data.enabled;
 
@@ -173,6 +174,13 @@ app.factory("Item", ["$http", function($http) {
 
         item.show_actions = function() {
             return (!item.readonly()) && item.buttons.length > 0;
+        }
+
+        // Determine whether to display the state.
+        item.show_display = function() {
+            console.log(item.name, typeof(item.state));
+            // TODO: move display logic into idiotic core
+            return (typeof(item.state) == "number");
         }
 
         item.disabled = function(disabled) {
