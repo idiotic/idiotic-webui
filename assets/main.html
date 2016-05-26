@@ -57,6 +57,14 @@
                 <div class="divider"></div>
               </div>
 
+              <div class="row" ng-if="item.tags.length > 0">
+                <div class="col s12">
+                  <div class="chip" ng-repeat="tag in item.tags">
+                    {{tag}}
+                  </div>
+                </div>
+              </div>
+
               <div ng-if="item.enable_graph()">
                 <a href="graph/{{item.id}}.svg">
                   <img ng-src="graph/{{item.id}}.svg"
