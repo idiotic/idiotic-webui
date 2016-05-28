@@ -44,6 +44,14 @@
               </div>
             </div>
             <div class="collapsible-body">
+              <div class="row center valign-wrapper"
+                   style="margin-bottom: 0; padding-top: 5px;" 
+                   ng-if="item.show_display()">
+                <b class="valign truncate hide-on-med-and-up col s12">
+                  {{item.display}}
+                </b>
+              </div>
+
               <div ng-if="item.show_actions()">
                 <div class="row" style="margin-bottom: 0;">
                   <a ng-repeat="button in item.buttons"
