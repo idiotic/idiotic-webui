@@ -27,8 +27,12 @@ app.factory("Api", ["$interval", "$http", "Item", "Scene",
 
         api.items = [];
 
-        api.get = function(endpoint) {
-            return $http.get(encodeURI(api.api_url + endpoint)).then(function(resp) {
+        api.get = function(endpoint, params) {
+            return $http({
+                url: encodeURI(api.api_url + endpoint),
+                method: "GET",
+                params: params
+            }).then(function(resp) {
                 if(resp.data.status == "success") {
                     console.log('GET', api.api_url + endpoint + ' successful');
                     return resp.data.result;
@@ -156,11 +160,11 @@ app.factory("Item", ["$http", function($http) {
                 console.log("Item", item.id, "refusing to send undefined state");
                 return;
             }
-            return item.send_command("set?val=" + item.state);
+            return item.send_command("set", {val: item.state});
         }
 
-        item.send_command = function(command) {
-            return api.get("item/" + item.id + "/command/" + command.name)
+        item.send_command = function(command, args) {
+            return api.get("item/" + item.id + "/command/" + command.name, args)
                 .then(function(result) {
                     // Update our models.
                     item.refresh(result.item);
@@ -245,6 +249,10 @@ app.factory("Scene", ["$http", function($http) {
     };
 
     return Scene;
+}]);
+
+app.controller("commandController", ["$scope", function($scope) {
+    $scope.args = {};
 }]);
 
 app.controller("idioticController", ["$scope", "$http", "Api", "visibilityService",
