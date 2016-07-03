@@ -117,10 +117,11 @@ def __group(times, values, count=50, group=lambda v: sum(v)/len(v)):
         return times, values
 
     count = min(count, len(times))
+    timestamps = [x.timestamp for x in times]
 
-    res, divisions, bins = scipy.stats.binned_statistic(times, values, statistic='mean', bins=count)
+    res, divisions, bins = scipy.stats.binned_statistic(timestamps, values, statistic='mean', bins=count)
 
-    return divisions[1:], res
+    return [datetime.datetime.fromtimestamp(x) for x in divisions[1:]], res
 
 def _graph(item, *_, **kwargs):
     args = utils.single_args(request.args)
