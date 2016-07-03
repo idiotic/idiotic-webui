@@ -6,6 +6,7 @@ import jinja2
 import json
 import logging
 import datetime
+import numpy as np
 import scipy.stats
 from flask import Response, request
 from idiotic import utils
@@ -120,8 +121,14 @@ def __group(times, values, count=50, group=lambda v: sum(v)/len(v)):
     timestamps = [x.timestamp() for x in times]
 
     res, divisions, bins = scipy.stats.binned_statistic(timestamps, values, statistic='mean', bins=count)
-
-    return [datetime.datetime.fromtimestamp(x) for x in divisions[1:]], res
+    divisions = [datetime.datetime.fromtimestamp(x) for x in divisions[1:]]
+    fulldivisions = []
+    fullres = []
+    for i in range(len(res)):
+        if not np.isnan(res[i]):
+            fulldivisions.append(divisions[i])
+            fullres.append(res[i])
+    return fulldivisions, fullres
 
 def _graph(item, *_, **kwargs):
     args = utils.single_args(request.args)
