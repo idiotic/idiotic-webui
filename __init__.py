@@ -117,7 +117,7 @@ def __group(times, values, count=50, group=lambda v: sum(v)/len(v)):
         return times, values
 
     count = min(count, len(times))
-    timestamps = [x.timestamp for x in times]
+    timestamps = [x.timestamp() for x in times]
 
     res, divisions, bins = scipy.stats.binned_statistic(timestamps, values, statistic='mean', bins=count)
 
