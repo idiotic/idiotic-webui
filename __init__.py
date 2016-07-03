@@ -6,6 +6,7 @@ import jinja2
 import json
 import logging
 import datetime
+import scipy.stats
 from flask import Response, request
 from idiotic import utils
 
@@ -116,30 +117,10 @@ def __group(times, values, count=50, group=lambda v: sum(v)/len(v)):
         return times, values
 
     count = min(count, len(times))
-    times, values = (list(x) for x in zip(*sorted(zip(times, values))))
 
-    diff = (times[-1] - times[0]) / count
-    divisions = [times[0] + i * diff for i in range(count)] + [times[-1]]
-    temp = []
+    res, divisions, bins = scipy.stats.binned_statistic(times, values, statistic='mean', bins=count)
 
-    res = [0,]
-
-    div = divisions[:1]
-    i = 0
-    count = 0
-    for j in range(len(times)):
-        if times[j] > div[-1]:
-            if count:
-                res[-1] = res[-1] / count
-            count = 0
-            res.append(0)
-            div.append(divisions[i])
-            i += 1
-        else:
-            res[-1] += values[j]
-            count += 1
-
-    return divisions, res[:-1]
+    return divisions[1:], res
 
 def _graph(item, *_, **kwargs):
     args = utils.single_args(request.args)
